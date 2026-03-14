@@ -220,7 +220,7 @@ def uct_score(child, parent_visits, c=math.sqrt(2)):
 
 def select_child_uct(node, c=math.sqrt(2)):
     """Return the child node with maximum UCT score."""
-    raise NotImplementedError
+    return max(node.children.values(), key=lambda child: uct_score(child, node.N, c))
 
 
 def expand(node):
