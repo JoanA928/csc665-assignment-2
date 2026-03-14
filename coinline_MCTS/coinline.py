@@ -242,7 +242,14 @@ def rollout(state):
     Default rollout policy: play uniformly random legal actions until terminal.
     Must NOT mutate the input state; rely on succ(state, action).
     """
-    raise NotImplementedError
+    current_state = state
+
+    while not terminal(current_state):
+        possible_actions = actions(current_state)
+        action = random.choice(possible_actions)
+        current_state = succ(current_state, action)
+
+    return current_state
 
 
 def backpropagate(node, reward):
