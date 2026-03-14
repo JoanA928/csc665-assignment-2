@@ -267,7 +267,11 @@ def best_action(root):
     """
     Return the action from root corresponding to the most-visited child (or highest mean value).
     """
-    raise NotImplementedError
+    if not root.children:
+        return None
+
+    best_child = max(root.children.values(), key=lambda child: child.N)
+    return best_child.parent_action
 
 
 def mcts(state, budget=2000, reward_mode="winloss", c=math.sqrt(2)):
