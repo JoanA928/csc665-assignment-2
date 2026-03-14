@@ -227,7 +227,14 @@ def expand(node):
     """
     Expand one untried action from node and return the new child node.
     """
-    raise NotImplementedError
+    if not node.untried_actions:
+        return None
+
+    action = node.untried_actions.pop()
+    next_state = succ(node.state, action)
+    child = MCTSNode(next_state, parent=node, parent_action=action)
+    node.children[action] = child
+    return child
 
 
 def rollout(state):
