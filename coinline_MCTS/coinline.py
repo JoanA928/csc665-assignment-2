@@ -256,7 +256,11 @@ def backpropagate(node, reward):
     """
     Backpropagate reward up to the root, updating visit counts and total values.
     """
-    raise NotImplementedError
+    current = node
+    while current is not None:
+        current.N += 1
+        current.W += reward
+        current = current.parent
 
 
 def best_action(root):
