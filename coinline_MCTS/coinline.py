@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import math
 import random
-from typing import Dict, Optional, Tuple, List
+from typing import Dict, List, Optional, Tuple
 
 Action = Tuple[str, int]  # ('L' or 'R', 1 or 2)
 
@@ -31,6 +31,7 @@ class State:
 # ----------------------------
 # A1 functions (game + minimax)
 # ----------------------------
+
 
 def player(state: State) -> str:
     """Return whose turn it is: 'player' or 'ai'."""
@@ -150,20 +151,27 @@ class MCTSNode:
         "W",
     )
 
-    def __init__(self, state: State, parent: Optional["MCTSNode"] = None, parent_action: Optional[Action] = None):
+    def __init__(
+        self,
+        state: State,
+        parent: Optional["MCTSNode"] = None,
+        parent_action: Optional[Action] = None,
+    ):
         self.state = state
         self.parent = parent
         self.parent_action = parent_action
         self.children: Dict[Action, MCTSNode] = {}
         self.untried_actions: List[Action] = actions(state)[:]  # copy
-        self.N = 0              # visit count
-        self.W = 0.0            # total reward (from root player's perspective)
+        self.N = 0  # visit count
+        self.W = 0.0  # total reward (from root player's perspective)
+
 
 def _root_scores(state: State, root_player: str) -> Tuple[int, int]:
     """Return (root_score, opp_score) given a terminal state."""
     if root_player == "player":
         return state.pScore, state.aiScore
     return state.aiScore, state.pScore
+
 
 def terminal_reward(state, root_player, reward_mode="winloss"):
     """
@@ -176,7 +184,24 @@ def terminal_reward(state, root_player, reward_mode="winloss"):
 
     Note: reward_mode is kept for compatibility, but only 'winloss' is supported.
     """
-    raise NotImplementedError
+    if not terminal(state):
+        raise ValueError("State is not a terminal state, cannot issue reward")
+
+    root_score, opp_score = _root_scores(state, root_player)
+
+    if reward_mode == "winloss":
+        if root_score > opp_score:
+            return 1.0
+        elif root_score < opp_score:
+            return -1.0
+        else:
+            return 0.0
+
+    elif reward_mode == "scorediff":
+        return float(root_score - opp_score)
+
+    else:
+        raise ValueError(f"Unknown reward mode: {reward_mode}")
 
 
 def uct_score(child, parent_visits, c=math.sqrt(2)):
@@ -232,3 +257,4 @@ def mcts(state, budget=2000, reward_mode="winloss", c=math.sqrt(2)):
     Returns: an action in actions(state), or None if state is terminal.
     """
     raise NotImplementedError
+
