@@ -210,7 +210,12 @@ def uct_score(child, parent_visits, c=math.sqrt(2)):
 
     child.W / child.N  +  c * sqrt( ln(parent_visits) / child.N )
     """
-    raise NotImplementedError
+    if child.N == 0:
+        return float("inf")
+
+    exploitation = child.W / child.N
+    exploration = c * math.sqrt(math.log(parent_visits) / child.N)
+    return exploitation + exploration
 
 
 def select_child_uct(node, c=math.sqrt(2)):
