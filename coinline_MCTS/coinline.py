@@ -283,5 +283,26 @@ def mcts(state, budget=2000, reward_mode="winloss", c=math.sqrt(2)):
 
     Returns: an action in actions(state), or None if state is terminal.
     """
-    raise NotImplementedError
+    if terminal(state):
+        return None
+
+    root = MCTSNode(state)
+    root_player = player(state)
+
+    for _ in range(budget):
+        node = root
+
+        while not terminal(node.state) and not node.untried_actions and node.children:
+            node = select_child_uct(node, c)
+
+        if not terminal(node.state) and node.untried_actions:
+            node = expand(node)
+
+        terminal_state = rollout(node.state)
+
+        reward = terminal_reward(terminal_state, root_player, reward_mode)
+
+        backpropagate(node, reward)
+
+    return best_action(root)
 
