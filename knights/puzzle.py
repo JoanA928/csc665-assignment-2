@@ -1,5 +1,5 @@
 ###### --------------------------------------------
-## The author of these scripts is T. D. Devlin 
+## The author of these scripts is T. D. Devlin
 ###### --------------------------------------------
 
 from logic import *
@@ -16,11 +16,11 @@ CKnave = Symbol("C is a Knave")
 # Puzzle 1
 # A says "I am both a knight and a knave."
 # ----------------------------------------
-##   write the statement(s) in PL 
-stat = None
+##   write the statement(s) in PL
+stat = And(AKnight, AKnave)
 ##   Fill in the knowledge base
 knowledge1 = And(
-    # TODO
+    Xor(AKnight, AKnave), Implication(AKnight, stat), Implication(AKnave, Not(stat))
 )
 # ----------------------------------------
 
@@ -28,12 +28,18 @@ knowledge1 = And(
 # A says "We are the same kind."
 # B says "We are of different kinds."
 # ----------------------------------------
-##   write the statement(s) in PL 
-stat = None
-##   Fill in the knowledge base
-knowledge2 = And(
-    # TODO
+##   write the statement(s) in PL
+stat = And(
+    Xor(AKnight, AKnave),
+    Xor(BKnight, BKnave),
+    Implication(AKnight, Or(And(AKnight, BKnight), And(AKnave, BKnave))),
+    Implication(AKnave, Not(Or(And(AKnight, BKnight), And(AKnave, BKnave)))),
+    Implication(BKnight, Or(And(AKnight, BKnave), And(AKnave, BKnight))),
+    Implication(BKnave, Not(Or(And(AKnight, BKnave), And(AKnave, BKnight)))),
 )
+
+##   Fill in the knowledge base
+knowledge2 = And(stat)
 # ----------------------------------------
 
 # Puzzle 3
@@ -42,11 +48,17 @@ knowledge2 = And(
 # B says "C is a knave."
 # C says "A is a knight."
 # ----------------------------------------
-##   write the statement(s) in PL 
-stat = None
+##   write the statement(s) in PL
+stat = Or(And(AKnight, BKnight), And(AKnave, BKnave))
+
 ##   Fill in the knowledge base
-knowledge3 = And(
-    # TODO
+knowledge2 = And(
+    Xor(AKnight, AKnave),
+    Xor(BKnight, BKnave),
+    Implication(AKnight, stat),
+    Implication(AKnave, Not(stat)),
+    Implication(BKnight, Or(And(AKnight, BKnave), And(AKnave, BKnight))),
+    Implication(BKnave, Not(Or(And(AKnight, BKnave), And(AKnave, BKnight)))),
 )
 # ----------------------------------------
 
@@ -56,7 +68,7 @@ def main():
     puzzles = [
         ("Puzzle 1", knowledge1),
         ("Puzzle 2", knowledge2),
-        ("Puzzle 3", knowledge3)
+        ("Puzzle 3", knowledge3),
     ]
     for puzzle, knowledge in puzzles:
         print(puzzle)
